@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-var zoomlevels = ["tile", "area", "wide", "map"];
+var zoomlevels = ["tile", "area", "wide", "map", "world"];
 
 (async () => {
 	
@@ -8,7 +8,7 @@ var zoomlevels = ["tile", "area", "wide", "map"];
 	
 	const browser = await puppeteer.launch({
 		headless: true,
-		args: ['--use-gl=egl']
+		args: ['--use-gl=egl', '--no-sandbox']
 	});
 	const page = await browser.newPage();
 	await page.setViewport({ width: 1050, height: 1050 })
@@ -19,23 +19,23 @@ var zoomlevels = ["tile", "area", "wide", "map"];
 	var version;
 	var z = 0;
 	while (z < zoomlevels.length) {
-		await page.goto('https://etheria.world/explore.html?version=0.9&tile=0&spotlight=true&suppressOthers=false&logodiv=true&hexinfodiv=false&controlinfodiv=false&zoomlevel=' + zoomlevels[z]);
-		await page.waitForTimeout(60000); // wait 60 seconds for everything to load
+		await page.goto('https://etheria.world/explore.html?version=0.9&tile=0&suppressBuilds=false&infodiv=false&spotlight=true&toolbar=false&graphs=false&zoomlevel=' + zoomlevels[z]);
+		await page.waitForTimeout(120000); // wait 2 mins for everything to load, increase this if it's not enough.
 		x = 0;
 		while (x < 4356) {
 			if (x < 1089)
-				version = "v0.9";
+				version = "v0pt9";
 			else if (x >= 1089 && x < 2178)
-				version = "v1.0";
+				version = "v1pt0";
 			else if (x >= 2178 && x < 3267)
-				version = "v1.1";
+				version = "v1pt1";
 			else
-				version = "v1.2";
-			console.log("screenshotting " + (x % 1089) + version + " zoomlevels[" + z + "]=" + zoomlevels[z]);
-			await page.screenshot({ path: "images/tiles/" + version + "/1050x1050_" + zoomlevels[z] + "/" + zoomlevels[z] + (x % 1089) + ".jpg" });
+				version = "v1pt2";
+			console.log("screenshotting x=" + x + "/4356 index=" + (x % 1089) + version + " zoomlevels[" + z + "]=" + zoomlevels[z]);
+			await page.screenshot({ quality: 95, path: "images/tiles/" + version + "/" + (x % 1089) + "_" + zoomlevels[z] + "_1050x1050_95.jpg" });
 			await page.keyboard.press("Enter"); // advances to next tile
 			//		await page.type(String.fromCharCode(38));
-			await page.waitForTimeout(4000);
+			await page.waitForTimeout(3000);
 			x++;
 		}
 		z++;
@@ -43,5 +43,4 @@ var zoomlevels = ["tile", "area", "wide", "map"];
 	await browser.close();
 })();
 
-// aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v0.9/1050x1050_tile s3://www.etheria.world/images/tiles/v0.9/1050x1050_tile && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v0.9/1050x1050_area s3://www.etheria.world/images/tiles/v0.9/1050x1050_area && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v0.9/1050x1050_wide s3://www.etheria.world/images/tiles/v0.9/1050x1050_wide && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v0.9/1050x1050_map s3://www.etheria.world/images/tiles/v0.9/1050x1050_map && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.0/1050x1050_tile s3://www.etheria.world/images/tiles/v1.0/1050x1050_tile && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.0/1050x1050_area s3://www.etheria.world/images/tiles/v1.0/1050x1050_area && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.0/1050x1050_wide s3://www.etheria.world/images/tiles/v1.0/1050x1050_wide && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.0/1050x1050_map s3://www.etheria.world/images/tiles/v1.0/1050x1050_map && 
-// aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.1/1050x1050_tile s3://www.etheria.world/images/tiles/v1.1/1050x1050_tile && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.1/1050x1050_area s3://www.etheria.world/images/tiles/v1.1/1050x1050_area && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.1/1050x1050_wide s3://www.etheria.world/images/tiles/v1.1/1050x1050_wide && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.1/1050x1050_map s3://www.etheria.world/images/tiles/v1.1/1050x1050_map && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.2/1050x1050_tile s3://www.etheria.world/images/tiles/v1.2/1050x1050_tile && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.2/1050x1050_area s3://www.etheria.world/images/tiles/v1.2/1050x1050_area && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.2/1050x1050_wide s3://www.etheria.world/images/tiles/v1.2/1050x1050_wide && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1.2/1050x1050_map s3://www.etheria.world/images/tiles/v1.2/1050x1050_map
+// aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v0pt9 s3://www.etheria.world/images/tiles/v0pt9 && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1pt0 s3://www.etheria.world/images/tiles/v1pt0 && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1pt1 s3://www.etheria.world/images/tiles/v1pt1 && aws s3 sync /home/cyrus/eclipse-workspace/etheria_screenshot_puppeteer/images/tiles/v1pt2 s3://www.etheria.world/images/tiles/v1pt2
